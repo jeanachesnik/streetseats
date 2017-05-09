@@ -9,13 +9,7 @@ void alarmIsr()
 void loop() {
 
   alarmState();
-
-   //While awake, let's switch to ALARM_1 to wake the arduino for sensing every X minutes
-   //RTC.alarmInterrupt(ALARM_1, true);
-   //RTC.alarmInterrupt(ALARM_2, false);
-
   
-
    Serial.println(counter++);
    delay(1000);
 
@@ -64,23 +58,20 @@ void loop() {
       //placing light test before it returns to sleep after short check...
       
       //lighTest(); 
-      //sleep();
+      sleep();
     }
-
+//
        if (lap == 7){
       //After a number of loop statements (laps), switch to a daily alarm to wake up the arduino on a different schedule (e.g. every day at 3 pm).
-      RTC.setAlarm(ALM1_MATCH_HOURS, 0, 04, 11, 1);    //(SS, MM, HH, 1) daydate parameter should be between 1 and 7
+      RTC.setAlarm(ALM1_MATCH_HOURS, 0, 45, 21, 1);    //(SS, MM, HH, 1) daydate parameter should be between 1 and 7
       RTC.alarm(ALARM_1);                   //ensure RTC interrupt flag is cleared
       RTC.alarmInterrupt(ALARM_1, true); 
       alarmCycle = -1;    //reset the counter uses to cycle through periodic checks while awake
       lap = 0;            //reset the counter for number of loops
       Serial.println("Changed to a daily alarm - ALARM_1B Launched");
       delay(200);
-      sleep();
-
+      //sleep();
     }
-
-///Relay();
 
 lighTest(); 
 

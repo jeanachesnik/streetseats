@@ -42,20 +42,25 @@
 //****RTC Additions...Timer Pin Definition 
 #define SQW_PIN 2       
 
+
+//additions
+unsigned long seconds = 1000L;
+unsigned long minutes = seconds * 60;
+
 int counter; //used to count seconds while awake
 int lap; //used to count times the loop routine has been called
 int alarmCycle = -1; 
 //****END of RTC Additions...
 
 int frequency = 1000; //for relay tests
-int lighCheckTime = 1000; //how often we check light sensor. 10 minutes will be 600000 milliseconds
+int lighCheckTime = 30000; //how often we check light sensor. 10 minutes will be 600000 milliseconds
 int lightVals[3]; //an array to store light readings (3 of them)
 int lightReading = 0; //an index we use to cound numbers of readings in our lightTest loop
 int lightTotal;
 int lightAvg;
 int darkVal = 80; //this is our night threshold value in lux
 int nightCounter = 0; //this may be used to track how long the lights should be on
-int nightCountMax = 5; // 18 times 10 minutes will be about 3 hours (10 miuntes / 60 = 6 light tests per hour)
+int nightCountMax = 8; // 18 times 10 minutes will be about 3 hours (10 miuntes / 60 = 6 light tests per hour)
 boolean night = false; // it's night (true) or not (false) *** do i still need this? 
 
 
@@ -135,9 +140,19 @@ void setup() {
     attachInterrupt(INT0, alarmIsr, FALLING);
 
     //Set an alarm at every 1st second of every minute.
-    RTC.setAlarm(ALM1_MATCH_SECONDS, 0, 0, 0, 1);    //daydate parameter should be between 1 and 7
+//    RTC.setAlarm(ALM1_MATCH_SECONDS, 0, 0, 0, 1);    //daydate parameter should be between 1 and 7
+//    RTC.alarm(ALARM_1);                   //ensure RTC interrupt flag is cleared
+//    RTC.alarmInterrupt(ALARM_1, true);
+
+    RTC.setAlarm (ALM1_MATCH_HOURS, 0, 27, 3, 1); 
     RTC.alarm(ALARM_1);                   //ensure RTC interrupt flag is cleared
     RTC.alarmInterrupt(ALARM_1, true);
+    Serial.println ("Set initial daily alarm in Setup"); 
+
+//    RTC.setAlarm(ALM1_MATCH_MINUTES, 0, 10, 0, 1);    //daydate parameter should be between 1 and 7
+//    RTC.alarm(ALARM_1);                   //ensure RTC interrupt flag is cleared
+//    RTC.alarmInterrupt(ALARM_1, true);
+    
 
     //Set an alarm every 10 minutes.
 //    RTC.setAlarm(ALM2_EVERY_MINUTE, 0, 10, 0, 1);    //daydate parameter should be between 1 and 7

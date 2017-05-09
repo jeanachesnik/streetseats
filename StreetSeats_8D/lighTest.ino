@@ -50,18 +50,45 @@ Serial.print(" ");
     unsetRelays();
     Serial.println ("Light avg is below dark value"); 
 
+    //
+
+    //if (nightCounter == 0) {
+    //solarGrace();
+  //}
+    //if (nightCounter == 1) {
+      //unsetRelays();
+  //}
+
+//  if (nightCounter == 2) {
+//    unsetRelays();
+//  }
+//
+//  if (nightCounter ==3) {
+//    solarGrace();
+//   
+//  }
+//
+//  if (nightCounter == 4) {
+//    unsetRelays ();
+//  }
+//
+//  if (nightCounter == 5) {
+//     unsetRelays();
+//  }
+  
+
     if (nightCounter >= nightCountMax){ //check if it's time to turn lights off
 
       setRelays();
       Serial.println ("Night counter reached max. All Relays Off");
        //if (lap == 7){
       //After a number of loop statements (laps), switch to a daily alarm to wake up the arduino on a different schedule (e.g. every day at 3 pm).
-//      RTC.setAlarm(ALM1_MATCH_HOURS, 0, 58, 17, 1);    //(SS, MM, HH, 1) daydate parameter should be between 1 and 7
-//      RTC.alarm(ALARM_1);                   //ensure RTC interrupt flag is cleared
-//      RTC.alarmInterrupt(ALARM_1, true); 
-//      alarmCycle = -1;    //reset the counter uses to cycle through periodic checks while awake
-//      lap = 0;            //reset the counter for number of loops
-//      Serial.println("Changed to a daily alarm - ALARM_1B Launched");
+      RTC.setAlarm(ALM1_MATCH_HOURS, 0, 27, 3, 1);    //(SS, MM, HH, 1) daydate parameter should be between 1 and 7
+      RTC.alarm(ALARM_1);                   //ensure RTC interrupt flag is cleared
+      RTC.alarmInterrupt(ALARM_1, true); 
+      alarmCycle = -1;    //reset the counter uses to cycle through periodic checks while awake
+      lap = 0;            //reset the counter for number of loops
+      Serial.println("Changed to a daily alarm - ALARM_1B RESET");
       delay(200);
       nightCounter = 0;
       sleep();

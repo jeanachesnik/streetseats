@@ -47,8 +47,41 @@ Serial.print(" ");
     Serial.print(nightCounter);
     Serial.print(" ");
 
+    //unsetRelays();
+//    Serial.println ("Light avg is below dark value"); 
+
+
+
+    if (nightCounter == 0) {
     unsetRelays();
-    Serial.println ("Light avg is below dark value"); 
+    //delay (minutes); 
+  }
+    if (nightCounter == 1) {
+      solarGrace();
+      //delay (minutes); 
+  }
+
+  if (nightCounter == 2) {
+    unsetRelays();
+  }
+
+  if (nightCounter ==3) {
+    unsetRelays();
+   
+  }
+
+  if (nightCounter == 4) {
+    solarGrace();
+  }
+
+  if (nightCounter == 5) {
+     unsetRelays();
+  }
+
+    if (nightCounter == 6) {
+     solarGrace();
+  }
+  
 
     if (nightCounter >= nightCountMax){ //check if it's time to turn lights off
 
@@ -56,12 +89,12 @@ Serial.print(" ");
       Serial.println ("Night counter reached max. All Relays Off");
        //if (lap == 7){
       //After a number of loop statements (laps), switch to a daily alarm to wake up the arduino on a different schedule (e.g. every day at 3 pm).
-//      RTC.setAlarm(ALM1_MATCH_HOURS, 0, 58, 17, 1);    //(SS, MM, HH, 1) daydate parameter should be between 1 and 7
-//      RTC.alarm(ALARM_1);                   //ensure RTC interrupt flag is cleared
-//      RTC.alarmInterrupt(ALARM_1, true); 
-//      alarmCycle = -1;    //reset the counter uses to cycle through periodic checks while awake
-//      lap = 0;            //reset the counter for number of loops
-//      Serial.println("Changed to a daily alarm - ALARM_1B Launched");
+      RTC.setAlarm(ALM1_MATCH_HOURS, 0, 53, 2, 1);    //(SS, MM, HH, 1) daydate parameter should be between 1 and 7
+      RTC.alarm(ALARM_1);                   //ensure RTC interrupt flag is cleared
+      RTC.alarmInterrupt(ALARM_1, true); 
+      alarmCycle = -1;    //reset the counter uses to cycle through periodic checks while awake
+      lap = 0;            //reset the counter for number of loops
+      Serial.println("Changed to a daily alarm - ALARM_1B RESET");
       delay(200);
       nightCounter = 0;
       sleep();
