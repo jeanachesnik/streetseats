@@ -1,61 +1,61 @@
 
-//SleepMode Library
-//#include <LowPower.h>
+////////***Beginning Libraries & Variables***////////
 
-//RTC Breakout Precision Timer Library
-#include "RTClib.h"
+      //RTC Breakout Precision Timer Library
+      #include "RTClib.h"
+      
+      //RTC Timer Libraries 
+      #include "LowPower.h"
+      #include <DS3232RTC.h>        //http://github.com/JChristensen/DS3232RTC
+      #include <Streaming.h>        //http://arduiniana.org/libraries/streaming/
+      #include <time.h>             //http://playground.arduino.cc/Code/Time
+      #include <TimeLib.h>
+      #include <Wire.h>     
+      
+      //Lux Sensor Library
+      #include <Adafruit_Sensor.h>
+      #include <Adafruit_TSL2561_U.h>
+      
+      //Area A Lighting 
+      #define setRelay1 13 //(solid green)
+      #define unsetRelay1 12 //(spotted green)
+      
+      //Area B Lighting
+      #define setRelay2 11 //(solid green)
+      #define unsetRelay2 10 //(spotted green)
+      
+      //Area C Lighting
+      #define setRelay3 9 //(solid green)
+      #define unsetRelay3 8 //(spotted green)
+      
+      //Area D Lighting
+      #define setRelay4 7
+      #define unsetRelay4 6
+      
+      //Area E Lighting 
+      #define setRelay5 5
+      #define unsetRelay5 4
+      
+      //RTC Additions Timer Pin Definition 
+      #define SQW_PIN 2     
+      
+      int counter; //used to count seconds while awake
+      int lap; //used to count times the loop routine has been called
+      int alarmCycle = -1; 
+      //END of RTC Additions...
+      
+      int frequency = 1000; //for relay tests
+      int lighCheckTime = 500; //how often we check light sensor. 10 minutes will be 600000 milliseconds
+      int lightVals[3]; //an array to store light readings (3 of them)
+      int lightReading = 0; //an index we use to cound numbers of readings in our lightTest loop
+      int lightTotal;
+      int lightAvg;
+      int darkVal = 80; //this is our night threshold value in lux
+      int nightCounter = 0; //this may be used to track how long the lights should be on
+      int nightCountMax = 5; // 18 times 10 minutes will be about 3 hours (10 miuntes / 60 = 6 light tests per hour)
+      boolean night = false; // it's night (true) or not (false)
 
-//RTC Timer Libraries 
-#include "LowPower.h"
-#include <DS3232RTC.h>        //http://github.com/JChristensen/DS3232RTC
-#include <Streaming.h>        //http://arduiniana.org/libraries/streaming/
-#include <Time.h>             //http://playground.arduino.cc/Code/Time
-#include <TimeLib.h>
-#include <Wire.h>     
-
-//Lux Sensor Library
-#include <Adafruit_Sensor.h>
-#include <Adafruit_TSL2561_U.h>
-
-
-//Area A Lighting 
-#define setRelay1 13 //(solid green)
-#define unsetRelay1 12 //(spotted green)
-
-//Area B Lighting
-#define setRelay2 11 //(solid green)
-#define unsetRelay2 10 //(spotted green)
-
-//Area C Lighting
-#define setRelay3 9 //(solid green)
-#define unsetRelay3 8 //(spotted green)
-
-//Area D Lighting
-#define setRelay4 7
-#define unsetRelay4 6
-
-//Area E Lighting 
-#define setRelay5 5
-#define unsetRelay5 4
-
-//****RTC Additions...Timer Pin Definition 
-#define SQW_PIN 2       
-
-int counter; //used to count seconds while awake
-int lap; //used to count times the loop routine has been called
-int alarmCycle = -1; 
-//****END of RTC Additions...
-
-int frequency = 1000; //for relay tests
-int lighCheckTime = 3000; //how often we check light sensor. 10 minutes will be 600000 milliseconds
-int lightVals[3]; //an array to store light readings (3 of them)
-int lightReading = 0; //an index we use to cound numbers of readings in our lightTest loop
-int lightTotal;
-int lightAvg;
-int darkVal = 80; //this is our night threshold value in lux
-int nightCounter = 0; //this may be used to track how long the lights should be on
-int nightCountMax = 20; // 18 times 10 minutes will be about 3 hours (10 miuntes / 60 = 6 light tests per hour)
-boolean night = false; // it's night (true) or not (false) *** do i still need this? 
+////////***End of Libraries & Variables***///////////////
 
 
 ///*** Jeana's Light Sensor VARIABLE Additions BEGIN *///////
@@ -109,7 +109,7 @@ void wakeUp()
 void setup() {
 
 ///*** Jeana's Setup RTC Sensor Additions BEGIN *///////
-{
+  {
     Serial.begin(115200);
     Serial.println("Street Seats Beta 1.0 Initializing");
 
@@ -131,29 +131,32 @@ void setup() {
     //Attach an interrupt on the falling of the SQW pin.
     //digitalWrite(SQW_PIN, HIGH);    //redundant with the following line
     pinMode(SQW_PIN, INPUT_PULLUP);
-    attachInterrupt(digitalPinToInterrupt(SQW_PIN), alarmIsr, FALLING);
+    attachInterrupt(INT0, alarmIsr, FALLING);
 
-    //Set an alarm at every 1st second of every minute.
-    RTC.setAlarm(ALM1_MATCH_SECONDS, 0, 0, 0, 1);    //daydate parameter should be between 1 and 7
-    RTC.alarm(ALARM_1);                   //ensure RTC interrupt flag is cleared
-    RTC.alarmInterrupt(ALARM_1, true);
+    RTC.alarmInterrupt (ALARM_2, true);
+    Serial.println ("Setup ALARM 2 - FALSE");
 
-    //Set an alarm every 10 minutes.
-//    RTC.setAlarm(ALM2_EVERY_MINUTE, 0, 10, 0, 1);    //daydate parameter should be between 1 and 7
-//    RTC.alarm(ALARM_2);                   //ensure RTC interrupt flag is cleared
-//    RTC.alarmInterrupt(ALARM_2, true);
+
+//    RTC.setAlarm (ALM1_MATCH_SECONDS, 0,0,0,1); 
+//    RTC.alarm (ALARM_1);
+//    RTC.alarmInterrupt (ALARM_1,true);
+//    Serial.println ("Setup - ALARM 1 TRUE"); 
+
+//    //Set an alarm every 10 minutes.
+//    RTC.setAlarm(ALM1_EVERY_MINUTE, 0, 0, 2, 1);    //daydate parameter should be between 1 and 7
+//    RTC.alarm(ALARM_1);                   //ensure RTC interrupt flag is cleared
+//    RTC.alarmInterrupt(ALARM_1, true);
+//    Serial.println ("Alarm 1 is setup");
+//    
 
     //Set a daily alarm.
-//    RTC.setAlarm(ALM2_MATCH_HOURS, 0, 49, 21, 1);    //daydate parameter should be between 1 and 7
-//    RTC.alarm(ALARM_2);                   //ensure RTC interrupt flag is cleared
-//    RTC.alarmInterrupt(ALARM_2, true);
+    RTC.setAlarm (ALM2_MATCH_HOURS, 0, 28, 21,1);   //daydate parameter should be between 1 and 7
+    RTC.alarm(ALARM_2);                   //ensure RTC interrupt flag is cleared
+    RTC.alarmInterrupt(ALARM_2, true);
+    Serial.println ("Alarm 1B is setup");
 
-      RTC.alarmInterrupt(ALARM_2,false);
-
-   sleep();
-   Serial.println ("Setup sending it to sleep loop >>");
-
-  //Serial.println("Street Seats Beta is sleeping...zzz");
+    sleep ();
+    Serial.println ("Setup - Calling Sleep loop");
 
 }
 
@@ -176,37 +179,8 @@ pinMode (unsetRelay5, OUTPUT);
 
 
 
-
-
 ////These will turn Relay1 lights OFF
-
-unsetRelays(); 
-Serial.println ("All Relays are turned off"); 
-//digitalWrite (setRelay1,LOW);
-//digitalWrite (unsetRelay1,HIGH);
-//Serial.println ("Relay1: UNSET");
-//
-//digitalWrite (setRelay2,LOW);
-//digitalWrite (unsetRelay2,HIGH);
-//Serial.println ("Relay2: UNSET");
-//
-//digitalWrite (setRelay3,LOW);
-//digitalWrite (unsetRelay3,HIGH);
-//Serial.println ("Relay3: UNSET");
-//
-//digitalWrite (setRelay4,LOW);
-//digitalWrite (unsetRelay4,HIGH);
-//Serial.println ("Relay4: UNSET");
-//
-//digitalWrite (setRelay5,LOW);
-//digitalWrite (unsetRelay5,HIGH);
-//Serial.println ("Relay5: UNSET");
-
-//These will turn Relay1 lights ON
-//digitalWrite (setRelay1, HIGH);
-//digitalWrite (unsetRelay1,LOW);
-//Serial.println ("Relay1: SET");
-
+setRelays(); 
 
 ///*Jeana's Set UP Additions*////
   Serial.println("Light Sensor Test"); Serial.println("");
