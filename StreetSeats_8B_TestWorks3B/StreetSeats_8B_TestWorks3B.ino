@@ -148,7 +148,7 @@ Serial.println ("All Relays are turned off");
 //    RTC.alarmInterrupt(ALARM_1, true);
     //Serial.println ("21 yaaaaaaaaaaaaaaaaaaaa");
 
-   RTC.setAlarm(ALM1_MATCH_HOURS, 0, 16, 19, 1); 
+   RTC.setAlarm(ALM1_MATCH_HOURS, 0, 15, 18, 1); 
     RTC.alarm(ALARM_1);                   //ensure RTC interrupt flag is cleared
     RTC.alarmInterrupt(ALARM_1, true);
     //Serial.println ("ALARM 1!!!! yaaaaaaaaaaaaaaaaaaaa");
